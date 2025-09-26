@@ -14,10 +14,9 @@
     <!-- Application Structure Plan: A single-page dashboard application with a sticky top navigation bar for easy access to key sections (Market, Services, Financials, etc.). The structure prioritizes user exploration, especially in the 'Financials' section, which features interactive charts and a profitability calculator. This design was chosen to transform the static business plan into an engaging tool for analysis, allowing users to quickly grasp key data points and explore financial scenarios, which is more effective than reading a linear document. -->
     <!-- Visualization & Content Choices: 
         - Market Demographics -> Goal: Inform -> Method: Key Stats Cards & Bar Chart (Chart.js) -> Interaction: Hover tooltips -> Justification: Provides a quick, visual snapshot of the target market's key metrics and age distribution.
-        - Startup Costs -> Goal: Analyze Proportions -> Method: Donut Chart (Chart.js) -> Interaction: Hover to see category details -> Justification: Clearly shows the largest components of the initial investment.
-        - Revenue vs. Expenses -> Goal: Compare -> Method: Grouped Bar Chart (Chart.js) -> Interaction: Tooltips for exact values -> Justification: Offers a direct visual comparison of projected financial health.
-        - Profitability Scenario -> Goal: Engage & Explore -> Method: Interactive Sliders (HTML/JS) -> Interaction: User adjusts sliders to see real-time revenue changes -> Justification: Empowers the user to test assumptions and understand revenue drivers, adding a dynamic "what-if" analysis layer.
-        - Services/Marketing -> Goal: Organize -> Method: Tabbed content and icon-based lists -> Interaction: Clicks on tabs/hover on items -> Justification: Breaks down dense information into clean, easily digestible sections. -->
+        - Startup Costs -> Goal: Analyze Proportions -> Method: Donut Chart (Chart.js) -> Interaction: Click to see category details -> Justification: Clearly shows the largest components of the initial investment, updated for 2000 sq ft and lower rent.
+        - Revenue vs. Expenses -> Goal: Compare -> Method: Grouped Bar Chart (Chart.js) -> Interaction: Click to see projection details -> Justification: Offers a direct visual comparison of projected financial health, reflecting significantly lower operating expenses.
+        - Profitability Scenario -> Goal: Engage & Explore -> Method: Interactive Sliders (HTML/JS) -> Interaction: User adjusts sliders to see real-time revenue and cost changes -> Justification: Empowers the user to test assumptions and understand revenue drivers, adding a dynamic "what-if" analysis layer. -->
     <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <style>
         body {
@@ -73,6 +72,18 @@
             border-radius: 50%;
             border: 2px solid white;
         }
+        .financial-table td, .financial-table th {
+            padding: 0.5rem 0.75rem;
+        }
+        .cost-input {
+            width: 100%;
+            text-align: right;
+            border: none;
+            background-color: transparent;
+            font-size: 0.875rem; /* text-sm */
+            padding-right: 0.75rem;
+            color: #4A4A4A;
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -110,7 +121,7 @@
             <div class="card max-w-4xl mx-auto p-8 text-left">
                 <h3 class="text-2xl font-semibold text-gray-800 mb-4">Business Overview</h3>
                 <p class="text-gray-700 leading-relaxed">
-                    Studio Elevate is a sole proprietorship founded to meet the growing demand for recreational and professional dance education in the Rome, GA community. We will also offer a valuable after-school care and pickup service for working parents, providing a safe and engaging environment that includes dance education and homework assistance. Located in a 3,500 sq. ft. space, the studio will offer a diverse range of dance classes, including ballet, jazz, hip-hop, and adult fitness-oriented classes like Zumba. We will focus on building a strong community and leveraging social media for marketing, targeting families with children and young adults. The initial funding request is to cover build-out costs, equipment, and a six-month operating buffer, with the goal of reaching profitability within the first 18-24 months.
+                    Studio Elevate is a sole proprietorship founded to meet the growing demand for recreational and professional dance education in the Rome, GA community. We will also offer a valuable after-school care and pickup service for working parents. Located in a **2,000 sq. ft. space** with a **$2,500 monthly rent**, the studio will offer a diverse range of dance classes, including ballet, jazz, hip-hop, and adult fitness-oriented classes like Zumba. The reduced space and rent significantly lower our overhead, improving the path to profitability. We will focus on building a strong community and leveraging our high-value mid-day and after-school programs. The initial funding request is to cover build-out costs, equipment, and a six-month operating buffer, with the goal of reaching profitability within the first 18-24 months.
                 </p>
             </div>
         </section>
@@ -184,12 +195,49 @@
         <!-- Financial Projections Section -->
         <section id="financials" class="mb-24">
             <h2 class="text-3xl font-bold text-center text-gray-800 mb-12">Financial Projections</h2>
-            <p class="text-center max-w-3xl mx-auto text-gray-600 mb-16">Our financial model is built on conservative estimates for student enrollment and operational costs. The following charts provide a visual breakdown of our startup needs, projected revenue versus expenses, and an interactive tool to explore different revenue scenarios. <strong>Click on a chart segment or bar to learn more about each financial item.</strong></p>
+            <p class="text-center max-w-3xl mx-auto text-gray-600 mb-8">Our financial model is built on conservative estimates for student enrollment and operational costs. Below is a summary of our startup and monthly expenses, followed by interactive tools to explore key data.</p>
+            
+            <!-- Financial Table with Editable Inputs -->
+            <div class="card p-8 max-w-4xl mx-auto mb-16">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4 text-center">Summary of Initial Capital and Operating Costs</h3>
+                <p class="text-center text-sm text-gray-500 mb-6">Edit the numbers to instantly recalculate totals.</p>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h4 class="text-xl font-bold text-amber-600 border-b pb-2 mb-3">Initial Capital Investment</h4>
+                        <table class="w-full text-sm financial-table">
+                            <tbody>
+                                <tr class="border-b"><td>Studio Build-Out</td><td><input type="number" id="capitalBuildOut" value="15000" min="0" class="cost-input"></td></tr>
+                                <tr class="border-b"><td>Working Capital (6 mos)</td><td><input type="number" id="capitalWorking" value="25000" min="0" class="cost-input"></td></tr>
+                                <tr class="border-b"><td>Lease & Rent (3 mos)</td><td><input type="number" id="capitalRent" value="7500" min="0" class="cost-input"></td></tr>
+                                <tr class="border-b"><td>Equipment & Furniture</td><td><input type="number" id="capitalEquipment" value="7000" min="0" class="cost-input"></td></tr>
+                                <tr class="border-b"><td>Vehicle Acquisition</td><td><input type="number" id="capitalVehicle" value="20000" min="0" class="cost-input"></td></tr>
+                                <tr class="border-b"><td>Marketing & Legal Fees</td><td><input type="number" id="capitalMarketing" value="5500" min="0" class="cost-input"></td></tr>
+                                <tr class="bg-gray-100 font-bold"><td>Total Initial Capital</td><td id="totalInitialCapital" class="text-right text-gray-800">$80,000</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                        <h4 class="text-xl font-bold text-amber-600 border-b pb-2 mb-3">Recurring Monthly Operating Costs</h4>
+                        <table class="w-full text-sm financial-table">
+                            <tbody>
+                                <tr class="border-b"><td>Rent ($\text{2,000 ft}^2$)</td><td><input type="number" id="opRent" value="2500" min="0" class="cost-input"></td></tr>
+                                <tr class="border-b"><td>Salaries (Instructors/Staff)</td><td><input type="number" id="opSalaries" value="3000" min="0" class="cost-input"></td></tr>
+                                <tr class="border-b"><td>Utilities & Admin</td><td><input type="number" id="opUtilities" value="1000" min="0" class="cost-input"></td></tr>
+                                <tr class="border-b"><td>Marketing & Software</td><td><input type="number" id="opMarketing" value="700" min="0" class="cost-input"></td></tr>
+                                <tr><td>Miscellaneous/Buffer</td><td><input type="number" id="opMisc" value="400" min="0" class="cost-input"></td></tr>
+                                <tr class="bg-gray-100 font-bold"><td>Est. Monthly Operating Cost</td><td id="totalMonthlyOperating" class="text-right text-gray-800">$7,600</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <p class="text-center max-w-3xl mx-auto text-gray-600 mb-16">The following charts provide a visual breakdown of our startup needs and projected revenue vs. expenses. **Click on a chart segment or bar to learn more about each financial item.**</p>
 
             <div class="grid lg:grid-cols-2 gap-12 mb-16">
                 <div class="card p-8">
-                    <h3 class="text-2xl font-semibold text-gray-800 mb-4 text-center">Startup Cost Breakdown</h3>
-                     <p class="text-center text-gray-600 mb-6">The majority of initial funding is allocated to the studio build-out and securing working capital for the first six months of operation.</p>
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-4 text-center">Startup Cost Breakdown (Revised: $\text{2,000 ft}^2$)</h3>
+                     <p class="text-center text-gray-600 mb-6">Initial funding reflects reduced costs for build-out, working capital, and lower first-months' rent.</p>
                     <div class="chart-container h-80 md:h-96">
                         <canvas id="startupCostsChart"></canvas>
                     </div>
@@ -198,8 +246,8 @@
                     </div>
                 </div>
                 <div class="card p-8">
-                    <h3 class="text-2xl font-semibold text-gray-800 mb-4 text-center">Projected Monthly Performance</h3>
-                    <p class="text-center text-gray-600 mb-6">This chart compares our estimated minimum monthly revenue against our maximum projected expenses to illustrate our path to profitability.</p>
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-4 text-center">Projected Monthly Performance (Lower Overhead)</h3>
+                    <p class="text-center text-gray-600 mb-6">This chart compares revenue against significantly reduced monthly expenses for the $\text{2,000 ft}^2$ space.</p>
                     <div class="chart-container h-80 md:h-96">
                         <canvas id="revenueExpenseChart"></canvas>
                     </div>
@@ -217,20 +265,20 @@
                      <p class="text-center max-w-3xl mx-auto text-gray-600 mb-8">Adjust the sliders below to see how each startup cost impacts the total initial investment. The chart will update in real-time to show the new breakdown.</p>
                      <div class="space-y-4 mb-8">
                          <div>
-                             <label for="buildoutSlider" class="block font-medium text-gray-700 mb-2">Build-Out: $<span id="buildoutValue" class="font-bold text-indigo-700">25,000</span></label>
-                             <input id="buildoutSlider" type="range" min="10000" max="40000" value="25000" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                             <label for="buildoutSlider" class="block font-medium text-gray-700 mb-2">Build-Out: $<span id="buildoutValue" class="font-bold text-indigo-700">15,000</span></label>
+                             <input id="buildoutSlider" type="range" min="10000" max="30000" value="15000" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
                          </div>
                          <div>
-                             <label for="capitalSlider" class="block font-medium text-gray-700 mb-2">Working Capital: $<span id="capitalValue" class="font-bold text-indigo-700">35,000</span></label>
-                             <input id="capitalSlider" type="range" min="15000" max="50000" value="35000" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                             <label for="capitalSlider" class="block font-medium text-gray-700 mb-2">Working Capital: $<span id="capitalValue" class="font-bold text-indigo-700">25,000</span></label>
+                             <input id="capitalSlider" type="range" min="15000" max="40000" value="25000" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
                          </div>
                          <div>
-                             <label for="rentSlider" class="block font-medium text-gray-700 mb-2">Lease & Rent: $<span id="rentValue" class="font-bold text-indigo-700">9,000</span></label>
-                             <input id="rentSlider" type="range" min="4500" max="15000" value="9000" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                             <label for="rentSlider" class="block font-medium text-gray-700 mb-2">Lease & Rent (3 mos): $<span id="rentValue" class="font-bold text-indigo-700">7,500</span></label>
+                             <input id="rentSlider" type="range" min="5000" max="12000" value="7500" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
                          </div>
                          <div>
-                             <label for="equipmentSlider" class="block font-medium text-gray-700 mb-2">Equipment: $<span id="equipmentValue" class="font-bold text-indigo-700">5,000</span></label>
-                             <input id="equipmentSlider" type="range" min="2000" max="10000" value="5000" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                             <label for="equipmentSlider" class="block font-medium text-gray-700 mb-2">Equipment: $<span id="equipmentValue" class="font-bold text-indigo-700">4,000</span></label>
+                             <input id="equipmentSlider" type="range" min="2000" max="8000" value="4000" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
                          </div>
                          <div>
                              <label for="vehicleSlider" class="block font-medium text-gray-700 mb-2">Vehicle Acquisition: $<span id="vehicleValue" class="font-bold text-indigo-700">20,000</span></label>
@@ -239,7 +287,7 @@
                      </div>
                      <div class="text-center bg-gray-50 p-8 rounded-lg mb-8">
                          <p class="text-lg text-gray-600 mb-2">Total Startup Cost:</p>
-                         <p id="totalStartupCost" class="text-5xl font-bold text-gray-800">$94,000</p>
+                         <p id="totalStartupCost" class="text-5xl font-bold text-gray-800">$71,500</p>
                      </div>
                      <div class="chart-container h-80 md:h-96">
                          <canvas id="startupSlidersChart"></canvas>
@@ -322,11 +370,13 @@
             mobileMenu.classList.toggle('hidden');
         });
         
+        // --- UPDATED DATA FOR 2000 SQ FT SPACE AND $2500 RENT ---
         const startupData = {
-            labels: ['Studio Build-Out', 'Working Capital', 'Lease & Rent', 'Equipment', 'Furniture', 'Marketing', 'Legal & Other', 'Vehicle Acquisition'],
+            labels: ['Studio Build-Out', 'Working Capital', 'Lease & Rent (3 Months)', 'Equipment', 'Furniture', 'Marketing', 'Legal & Other', 'Vehicle Acquisition'],
+            // Data updated to reflect smaller space and lower rent/capital cushion
+            data: [15000, 25000, 7500, 4000, 3000, 2500, 3000, 20000], 
             datasets: [{
                 label: 'Startup Costs',
-                data: [25000, 35000, 9000, 5000, 4000, 3000, 4000, 20000],
                 backgroundColor: ['#1e40af', '#6366f1', '#10b981', '#f59e0b', '#ef4444', '#ec4899', '#8b5cf6', '#3b82f6'],
                 hoverOffset: 4
             }]
@@ -334,16 +384,18 @@
 
         const revenueExpenseData = {
             labels: ['Revenue', 'Expenses'],
+            // Expenses drastically reduced due to $2,500 monthly rent basis
             datasets: [{
                 label: 'Minimum Projection',
-                data: [12500, 10800],
+                data: [12500, 6800], // Minimum expense estimate ~ $6,800
                 backgroundColor: ['#f59e0b', '#1e40af'],
             }, {
                 label: 'Maximum Projection',
-                data: [18000, 13000],
+                data: [18000, 8000], // Maximum expense estimate ~ $8,000
                 backgroundColor: ['#f59e0b', '#1e40af'],
             }]
         };
+        // --- END UPDATED DATA ---
 
         const ageDemographicsData = {
             labels: ['< 18 years', '18-24 years', '25-44 years', '45-64 years', '65+ years'],
@@ -357,19 +409,19 @@
         };
 
         const startupDetails = {
-            'Studio Build-Out': 'This includes costs for professional dance flooring, mirrors, ballet barres, and sound-proofing to create a high-quality, safe dance environment.',
-            'Working Capital': 'A financial cushion to cover operational expenses like payroll, utilities, and marketing for the first six months, ensuring stability during the initial growth phase.',
-            'Lease & Rent': 'Covers the initial security deposit and the first month of rent for the 3,500 sq. ft. studio space.',
+            'Studio Build-Out': 'This includes costs for professional dance flooring, mirrors, ballet barres, and sound-proofing for the smaller 2,000 sq ft space.',
+            'Working Capital': 'A financial cushion to cover operational expenses like payroll, utilities, and marketing for the first six months. Reduced amount reflects lower monthly overhead.',
+            'Lease & Rent (3 Months)': 'Covers the initial security deposit and the first two months of rent for the $2,500/month space.',
             'Equipment': 'This includes the sound system, speakers, props, and other technical equipment necessary for classes.',
             'Furniture': 'Costs for a front desk, seating for the lobby, office furniture, and storage solutions.',
             'Marketing': 'Initial investment in advertising, grand opening promotions, flyer distribution, and digital marketing campaigns.',
             'Legal & Other': 'Includes business license fees, legal consultation, and initial software subscriptions for class registration.',
-            'Vehicle Acquisition': 'Cost of a vehicle for the after-school pickup service, which is a new and valuable offering for working parents.'
+            'Vehicle Acquisition': 'Cost of a vehicle for the after-school pickup service, a key value-added offering.'
         };
 
         const revenueDetails = {
-            'Minimum Projection': 'This represents a conservative estimate of monthly revenue and expenses, assuming a slow initial student enrollment. Profitability is expected to be minimal or negative during this period.',
-            'Maximum Projection': 'This shows a more optimistic scenario with higher student enrollment and additional revenue from workshops and private lessons. This model projects a healthy monthly profit margin.'
+            'Minimum Projection': 'This represents a conservative estimate of monthly revenue ($12,500) against the new minimum monthly expense base of $6,800, showing clear initial profitability.',
+            'Maximum Projection': 'This shows an optimistic scenario with higher revenue ($18,000) and slightly increased operating expenses ($8,000), projecting a healthy monthly profit margin.'
         };
 
         const startupCostsConfig = {
@@ -553,7 +605,8 @@
         const vehicleValue = document.getElementById('vehicleValue');
         const totalStartupCost = document.getElementById('totalStartupCost');
         
-        const initialStartupData = [25000, 35000, 9000, 5000, 20000];
+        // --- UPDATED SLIDER DEFAULTS AND DATA FOR 2000 SQ FT SPACE ---
+        const initialStartupData = [15000, 25000, 7500, 4000, 20000]; 
         const startupSlidersLabels = ['Build-Out', 'Working Capital', 'Lease & Rent', 'Equipment', 'Vehicle Acquisition'];
         const startupSlidersColors = ['#1e40af', '#6366f1', '#10b981', '#f59e0b', '#3b82f6'];
 
@@ -605,7 +658,10 @@
             const rent = parseInt(rentSlider.value);
             const equipment = parseInt(equipmentSlider.value);
             const vehicle = parseInt(vehicleSlider.value);
-            const total = buildout + capital + rent + equipment + vehicle + 4000 + 3000;
+            // Fixed costs (Furniture $3k, Marketing $2.5k, Legal $3k) are outside the sliders for simplicity
+            const fixedCosts = 3000 + 2500 + 3000; 
+            const total = buildout + capital + rent + equipment + vehicle + fixedCosts;
+
             buildoutValue.textContent = buildout.toLocaleString();
             capitalValue.textContent = capital.toLocaleString();
             rentValue.textContent = rent.toLocaleString();
@@ -623,6 +679,58 @@
         equipmentSlider.addEventListener('input', updateStartupCosts);
         vehicleSlider.addEventListener('input', updateStartupCosts);
         updateStartupCosts();
+        
+        // --- NEW: Editable Financial Summary Table Logic ---
+
+        const capitalInputs = [
+            document.getElementById('capitalBuildOut'),
+            document.getElementById('capitalWorking'),
+            document.getElementById('capitalRent'),
+            document.getElementById('capitalEquipment'),
+            document.getElementById('capitalVehicle'),
+            document.getElementById('capitalMarketing')
+        ];
+
+        const operatingInputs = [
+            document.getElementById('opRent'),
+            document.getElementById('opSalaries'),
+            document.getElementById('opUtilities'),
+            document.getElementById('opMarketing'),
+            document.getElementById('opMisc')
+        ];
+
+        const totalInitialCapitalElement = document.getElementById('totalInitialCapital');
+        const totalMonthlyOperatingElement = document.getElementById('totalMonthlyOperating');
+        
+        const formatCurrency = (value) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0 }).format(value);
+
+        function updateFinancialSummaryTable() {
+            let totalCapital = 0;
+            let totalOperating = 0;
+            
+            capitalInputs.forEach(input => {
+                const value = parseInt(input.value) || 0;
+                totalCapital += value;
+            });
+
+            operatingInputs.forEach(input => {
+                const value = parseInt(input.value) || 0;
+                totalOperating += value;
+            });
+
+            totalInitialCapitalElement.textContent = formatCurrency(totalCapital);
+            totalMonthlyOperatingElement.textContent = formatCurrency(totalOperating);
+        }
+        
+        // Attach event listeners to all new input fields
+        [...capitalInputs, ...operatingInputs].forEach(input => {
+            input.addEventListener('input', updateFinancialSummaryTable);
+            // Ensure initial values are numbers
+            input.value = parseInt(input.value).toString(); 
+        });
+
+        updateFinancialSummaryTable(); 
+        // --- END NEW LOGIC ---
     });
 </script>
 </body>
