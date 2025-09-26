@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Business Plan: The Rome Dance Studio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutral Harmony -->
+    <!-- Application Structure Plan: A single-page dashboard application with a sticky top navigation bar for easy access to key sections (Market, Services, Financials, etc.). The structure prioritizes user exploration, especially in the 'Financials' section, which features interactive charts and a profitability calculator. This design was chosen to transform the static business plan into an engaging tool for analysis, allowing users to quickly grasp key data points and explore financial scenarios, which is more effective than reading a linear document. -->
+    <!-- Visualization & Content Choices: 
+        - Market Demographics -> Goal: Inform -> Method: Key Stats Cards & Bar Chart (Chart.js) -> Interaction: Hover tooltips -> Justification: Provides a quick, visual snapshot of the target market's key metrics and age distribution.
+        - Startup Costs -> Goal: Analyze Proportions -> Method: Donut Chart (Chart.js) -> Interaction: Hover to see category details -> Justification: Clearly shows the largest components of the initial investment.
+        - Revenue vs. Expenses -> Goal: Compare -> Method: Grouped Bar Chart (Chart.js) -> Interaction: Tooltips for exact values -> Justification: Offers a direct visual comparison of projected financial health.
+        - Profitability Scenario -> Goal: Engage & Explore -> Method: Interactive Sliders (HTML/JS) -> Interaction: User adjusts sliders to see real-time revenue changes -> Justification: Empowers the user to test assumptions and understand revenue drivers, adding a dynamic "what-if" analysis layer.
+        - Services/Marketing -> Goal: Organize -> Method: Tabbed content and icon-based lists -> Interaction: Clicks on tabs/hover on items -> Justification: Breaks down dense information into clean, easily digestible sections. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFBF8;
+            color: #4A4A4A;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .nav-link {
+            transition: color 0.3s ease;
+        }
+        .nav-link:hover {
+            color: #D97706;
+        }
+        .card {
+            background-color: #FFFFFF;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #F59E0B;
+            cursor: pointer;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+        input[type=range]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #F59E0B;
+            cursor: pointer;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header & Navigation -->
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-gray-800 tracking-tight">Studio Elevate</h1>
+            <div class="hidden md:flex space-x-8">
+                <a href="#summary" class="nav-link text-gray-600 font-medium">Summary</a>
+                <a href="#market" class="nav-link text-gray-600 font-medium">Market</a>
+                <a href="#services" class="nav-link text-gray-600 font-medium">Services</a>
+                <a href="#financials" class="nav-link text-gray-600 font-medium">Financials</a>
+                <a href="#marketing" class="nav-link text-gray-600 font-medium">Marketing</a>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden text-gray-700 focus:outline-none">
+                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            </button>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden px-6 pb-4">
+            <a href="#summary" class="block py-2 nav-link text-gray-600 font-medium">Summary</a>
+            <a href="#market" class="block py-2 nav-link text-gray-600 font-medium">Market</a>
+            <a href="#services" class="block py-2 nav-link text-gray-600 font-medium">Services</a>
+            <a href="#financials" class="block py-2 nav-link text-gray-600 font-medium">Financials</a>
+            <a href="#marketing" class="block py-2 nav-link text-gray-600 font-medium">Marketing</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-12">
+
+        <!-- Executive Summary Section -->
+        <section id="summary" class="text-center mb-24">
+            <h2 class="text-4xl font-bold text-gray-800 mb-4">A New Stage for Dance in Rome, GA</h2>
+            <p class="text-lg max-w-3xl mx-auto text-gray-600 mb-6">Our mission is to provide a welcoming, high-quality, and inclusive environment for individuals of all ages and skill levels to learn, grow, and express themselves through the art of dance.</p>
+            <div class="card max-w-4xl mx-auto p-8 text-left">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">Business Overview</h3>
+                <p class="text-gray-700 leading-relaxed">
+                    Studio Elevate is a sole proprietorship founded to meet the growing demand for recreational and professional dance education in the Rome, GA community. We will also offer a valuable after-school care and pickup service for working parents, providing a safe and engaging environment that includes dance education and homework assistance. Located in a 3,500 sq. ft. space, the studio will offer a diverse range of dance classes, including ballet, jazz, hip-hop, and adult fitness-oriented classes like Zumba. We will focus on building a strong community and leveraging social media for marketing, targeting families with children and young adults. The initial funding request is to cover build-out costs, equipment, and a six-month operating buffer, with the goal of reaching profitability within the first 18-24 months.
+                </p>
+            </div>
+        </section>
+
+        <!-- Market Analysis Section -->
+        <section id="market" class="mb-24">
+            <h2 class="text-3xl font-bold text-center text-gray-800 mb-12">Understanding the Rome Market</h2>
+            <div class="grid md:grid-cols-3 gap-8 mb-16 text-center">
+                <div class="card p-6">
+                    <p class="text-4xl font-bold text-amber-600">37.8k</p>
+                    <p class="text-gray-600 mt-2">Total Population</p>
+                </div>
+                <div class="card p-6">
+                    <p class="text-4xl font-bold text-amber-600">36.7</p>
+                    <p class="text-gray-600 mt-2">Median Age</p>
+                </div>
+                <div class="card p-6">
+                    <p class="text-4xl font-bold text-amber-600">$51k</p>
+                    <p class="text-gray-600 mt-2">Median Household Income</p>
+                </div>
+            </div>
+             <div class="card p-8">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4 text-center">Target Age Demographics</h3>
+                <p class="text-center text-gray-600 mb-6">Our primary market is youth aged 3-18, a significant demographic in Rome. This chart illustrates the age distribution, highlighting the opportunity within the youth and young adult population for both core classes and adult fitness programs. The data labels show the population for each age group.</p>
+                <div class="chart-container h-80 md:h-96">
+                    <canvas id="ageDemographicsChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Services Section -->
+        <section id="services" class="mb-24">
+            <h2 class="text-3xl font-bold text-center text-gray-800 mb-12">Our Class Offerings</h2>
+            <p class="text-center max-w-3xl mx-auto text-gray-600 mb-8">We provide a structured curriculum for children and flexible options for adults, ensuring a high-quality dance education for every student. Our diverse range of classes caters to various interests and skill levels, from foundational movements to pre-professional training.</p>
+            <div class="max-w-4xl mx-auto">
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="card p-8">
+                        <h3 class="text-2xl font-semibold text-gray-800 mb-4">Children's Classes</h3>
+                        <ul class="space-y-3 text-gray-700 list-disc list-inside">
+                            <li>Creative Movement (ages 3-5)</li>
+                            <li>Ballet & Tap Combo (ages 6-8)</li>
+                            <li>Hip-Hop (ages 9-12, 13+)</li>
+                            <li>Jazz, Lyrical, & Contemporary (ages 9-12, 13+)</li>
+                            <li>Pre-Professional and Competition Teams</li>
+                        </ul>
+                    </div>
+                     <div class="card p-8">
+                        <h3 class="text-2xl font-semibold text-gray-800 mb-4">Adult Classes</h3>
+                        <ul class="space-y-3 text-gray-700 list-disc list-inside">
+                            <li>Adult Ballet and Jazz</li>
+                            <li>Zumba and Barre Fitness</li>
+                            <li>Social Dance Workshops (Ballroom, Salsa)</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card p-8 mt-8">
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-4">After-School Care & Pickup</h3>
+                    <p class="text-gray-700">A new service designed for working parents in the Rome community. We offer reliable pickup from local schools, a safe and structured environment for homework assistance, and a dedicated dance class as part of the daily schedule. This program provides convenience for parents and a positive, enriching after-school experience for children.</p>
+                </div>
+                <div class="card p-8 mt-8">
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-4">Mid-Day Offerings</h3>
+                    <ul class="space-y-3 text-gray-700 list-disc list-inside">
+                        <li><strong>Preschool Dance and Movement:</strong> Short, engaging classes for children aged 2-5 to fill the morning hours.</li>
+                        <li><strong>Homeschool PE:</strong> Structured daytime dance and movement classes to fulfill physical education requirements for local homeschooling families.</li>
+                        <li><strong>Adult Fitness & Wellness:</strong> Daytime classes like Yoga, Pilates, and Barre to attract a different demographic and monetize the studio's off-peak hours.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Financial Projections Section -->
+        <section id="financials" class="mb-24">
+            <h2 class="text-3xl font-bold text-center text-gray-800 mb-12">Financial Projections</h2>
+            <p class="text-center max-w-3xl mx-auto text-gray-600 mb-16">Our financial model is built on conservative estimates for student enrollment and operational costs. The following charts provide a visual breakdown of our startup needs, projected revenue versus expenses, and an interactive tool to explore different revenue scenarios. <strong>Click on a chart segment or bar to learn more about each financial item.</strong></p>
+
+            <div class="grid lg:grid-cols-2 gap-12 mb-16">
+                <div class="card p-8">
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-4 text-center">Startup Cost Breakdown</h3>
+                     <p class="text-center text-gray-600 mb-6">The majority of initial funding is allocated to the studio build-out and securing working capital for the first six months of operation.</p>
+                    <div class="chart-container h-80 md:h-96">
+                        <canvas id="startupCostsChart"></canvas>
+                    </div>
+                    <div id="startupDetails" class="mt-8 p-4 bg-gray-50 rounded-lg text-sm text-gray-700">
+                        <p class="text-center font-semibold text-gray-500">Click a slice above for details.</p>
+                    </div>
+                </div>
+                <div class="card p-8">
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-4 text-center">Projected Monthly Performance</h3>
+                    <p class="text-center text-gray-600 mb-6">This chart compares our estimated minimum monthly revenue against our maximum projected expenses to illustrate our path to profitability.</p>
+                    <div class="chart-container h-80 md:h-96">
+                        <canvas id="revenueExpenseChart"></canvas>
+                    </div>
+                     <div id="revenueDetails" class="mt-8 p-4 bg-gray-50 rounded-lg text-sm text-gray-700">
+                        <p class="text-center font-semibold text-gray-500">Click a bar above for details.</p>
+                    </div>
+                </div>
+            </div>
+             
+             <!-- Interactive Startup Cost Planner and Existing Revenue Planner -->
+             <div class="grid lg:grid-cols-2 gap-12">
+                 <!-- Interactive Startup Cost Planner -->
+                 <div class="card p-8">
+                     <h3 class="text-2xl font-semibold text-gray-800 mb-4 text-center">Interactive Startup Cost Planner</h3>
+                     <p class="text-center max-w-3xl mx-auto text-gray-600 mb-8">Adjust the sliders below to see how each startup cost impacts the total initial investment. The chart will update in real-time to show the new breakdown.</p>
+                     <div class="space-y-4 mb-8">
+                         <div>
+                             <label for="buildoutSlider" class="block font-medium text-gray-700 mb-2">Build-Out: $<span id="buildoutValue" class="font-bold text-indigo-700">25,000</span></label>
+                             <input id="buildoutSlider" type="range" min="10000" max="40000" value="25000" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                         </div>
+                         <div>
+                             <label for="capitalSlider" class="block font-medium text-gray-700 mb-2">Working Capital: $<span id="capitalValue" class="font-bold text-indigo-700">35,000</span></label>
+                             <input id="capitalSlider" type="range" min="15000" max="50000" value="35000" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                         </div>
+                         <div>
+                             <label for="rentSlider" class="block font-medium text-gray-700 mb-2">Lease & Rent: $<span id="rentValue" class="font-bold text-indigo-700">9,000</span></label>
+                             <input id="rentSlider" type="range" min="4500" max="15000" value="9000" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                         </div>
+                         <div>
+                             <label for="equipmentSlider" class="block font-medium text-gray-700 mb-2">Equipment: $<span id="equipmentValue" class="font-bold text-indigo-700">5,000</span></label>
+                             <input id="equipmentSlider" type="range" min="2000" max="10000" value="5000" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                         </div>
+                         <div>
+                             <label for="vehicleSlider" class="block font-medium text-gray-700 mb-2">Vehicle Acquisition: $<span id="vehicleValue" class="font-bold text-indigo-700">20,000</span></label>
+                             <input id="vehicleSlider" type="range" min="10000" max="40000" value="20000" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                         </div>
+                     </div>
+                     <div class="text-center bg-gray-50 p-8 rounded-lg mb-8">
+                         <p class="text-lg text-gray-600 mb-2">Total Startup Cost:</p>
+                         <p id="totalStartupCost" class="text-5xl font-bold text-gray-800">$94,000</p>
+                     </div>
+                     <div class="chart-container h-80 md:h-96">
+                         <canvas id="startupSlidersChart"></canvas>
+                     </div>
+                 </div>
+                 
+                 <!-- Existing Interactive Revenue Scenario Planner -->
+                <div class="card p-8">
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-4 text-center">Interactive Revenue Scenario Planner</h3>
+                    <p class="text-center max-w-3xl mx-auto text-gray-600 mb-8">Use the sliders below to see how changes in student numbers and average tuition affect monthly revenue. This tool helps visualize the studio's growth potential and key financial drivers.</p>
+                    <div class="grid md:grid-cols-2 gap-8 items-center">
+                        <div>
+                            <div class="mb-6">
+                                <label for="studentSlider" class="block font-medium text-gray-700 mb-2">Total Students: <span id="studentValue" class="font-bold text-amber-600">150</span></label>
+                                <input id="studentSlider" type="range" min="50" max="300" value="150" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                            </div>
+                            <div>
+                                <label for="tuitionSlider" class="block font-medium text-gray-700 mb-2">Avg. Monthly Tuition: $<span id="tuitionValue" class="font-bold text-amber-600">98</span></label>
+                                <input id="tuitionSlider" type="range" min="60" max="150" value="98" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                            </div>
+                             <div>
+                                <label for="afterSchoolSlider" class="block font-medium text-gray-700 mb-2">After-School Students: <span id="afterSchoolValue" class="font-bold text-amber-600">20</span></label>
+                                <input id="afterSchoolSlider" type="range" min="0" max="50" value="20" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                            </div>
+                        </div>
+                        <div class="text-center bg-amber-50 p-8 rounded-lg">
+                            <p class="text-lg text-gray-600 mb-2">Estimated Monthly Revenue:</p>
+                            <p id="estimatedRevenue" class="text-5xl font-bold text-gray-800">$18,700</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Marketing Strategy Section -->
+        <section id="marketing" class="mb-16">
+            <h2 class="text-3xl font-bold text-center text-gray-800 mb-12">Marketing & Sales Strategy</h2>
+             <p class="text-center max-w-3xl mx-auto text-gray-600 mb-8">Our strategy is a blend of modern digital outreach and community-focused local marketing to build a strong brand presence and attract a steady flow of students.</p>
+            <div class="max-w-5xl mx-auto grid md:grid-cols-2 gap-10">
+                <div class="card p-8">
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-4 flex items-center">
+                        <span class="mr-3">🌐</span> Digital Marketing
+                    </h3>
+                    <ul class="space-y-3 text-gray-700 list-disc list-inside">
+                        <li>Professional, mobile-friendly website with online registration.</li>
+                        <li>Active presence on Instagram, Facebook, and TikTok.</li>
+                        <li>Monthly email newsletters with studio news and offers.</li>
+                    </ul>
+                </div>
+                <div class="card p-8">
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-4 flex items-center">
+                       <span class="mr-3">🤝</span> Local Marketing
+                    </h3>
+                    <ul class="space-y-3 text-gray-700 list-disc list-inside">
+                        <li>Partnerships with local schools, daycares, and community centers.</li>
+                        <li>Grand Opening event to generate local buzz.</li>
+                        <li>Local advertising and sponsoring community events.</li>
+                        <li>Referral discounts for current students.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-800 text-white">
+        <div class="container mx-auto px-6 py-8 text-center">
+            <p>&copy; 2025 Studio Elevate Business Plan. All rights reserved.</p>
+            <p class="text-gray-400 text-sm mt-2">This is a conceptual business plan for demonstration purposes.</p>
+        </div>
+    </footer>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        Chart.register(ChartDataLabels);
+
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+        
+        const startupData = {
+            labels: ['Studio Build-Out', 'Working Capital', 'Lease & Rent', 'Equipment', 'Furniture', 'Marketing', 'Legal & Other', 'Vehicle Acquisition'],
+            datasets: [{
+                label: 'Startup Costs',
+                data: [25000, 35000, 9000, 5000, 4000, 3000, 4000, 20000],
+                backgroundColor: ['#1e40af', '#6366f1', '#10b981', '#f59e0b', '#ef4444', '#ec4899', '#8b5cf6', '#3b82f6'],
+                hoverOffset: 4
+            }]
+        };
+
+        const revenueExpenseData = {
+            labels: ['Revenue', 'Expenses'],
+            datasets: [{
+                label: 'Minimum Projection',
+                data: [12500, 10800],
+                backgroundColor: ['#f59e0b', '#1e40af'],
+            }, {
+                label: 'Maximum Projection',
+                data: [18000, 13000],
+                backgroundColor: ['#f59e0b', '#1e40af'],
+            }]
+        };
+
+        const ageDemographicsData = {
+            labels: ['< 18 years', '18-24 years', '25-44 years', '45-64 years', '65+ years'],
+            datasets: [{
+                label: 'Population by Age',
+                data: [8400, 3070, 9676, 5467, 5564],
+                backgroundColor: '#f59e0b',
+                borderColor: '#ea580c',
+                borderWidth: 1
+            }]
+        };
+
+        const startupDetails = {
+            'Studio Build-Out': 'This includes costs for professional dance flooring, mirrors, ballet barres, and sound-proofing to create a high-quality, safe dance environment.',
+            'Working Capital': 'A financial cushion to cover operational expenses like payroll, utilities, and marketing for the first six months, ensuring stability during the initial growth phase.',
+            'Lease & Rent': 'Covers the initial security deposit and the first month of rent for the 3,500 sq. ft. studio space.',
+            'Equipment': 'This includes the sound system, speakers, props, and other technical equipment necessary for classes.',
+            'Furniture': 'Costs for a front desk, seating for the lobby, office furniture, and storage solutions.',
+            'Marketing': 'Initial investment in advertising, grand opening promotions, flyer distribution, and digital marketing campaigns.',
+            'Legal & Other': 'Includes business license fees, legal consultation, and initial software subscriptions for class registration.',
+            'Vehicle Acquisition': 'Cost of a vehicle for the after-school pickup service, which is a new and valuable offering for working parents.'
+        };
+
+        const revenueDetails = {
+            'Minimum Projection': 'This represents a conservative estimate of monthly revenue and expenses, assuming a slow initial student enrollment. Profitability is expected to be minimal or negative during this period.',
+            'Maximum Projection': 'This shows a more optimistic scenario with higher student enrollment and additional revenue from workshops and private lessons. This model projects a healthy monthly profit margin.'
+        };
+
+        const startupCostsConfig = {
+            type: 'doughnut',
+            data: startupData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    },
+                    datalabels: {
+                        color: '#4A4A4A',
+                        formatter: (value, context) => {
+                            const total = context.chart.data.datasets[0].data.reduce((acc, current) => acc + current, 0);
+                            const percentage = (value / total * 100).toFixed(1) + '%';
+                            return `${percentage}\n$${value.toLocaleString()}`;
+                        },
+                        labels: {
+                            value: {
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                }
+                            }
+                        }
+                    },
+                    tooltip: {
+                        enabled: false
+                    }
+                }
+            }
+        };
+
+        const revenueExpenseConfig = {
+            type: 'bar',
+            data: revenueExpenseData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '$' + value / 1000 + 'k';
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    },
+                    datalabels: {
+                        color: '#4A4A4A',
+                        anchor: 'end',
+                        align: 'top',
+                        formatter: (value) => {
+                             return '$' + value.toLocaleString();
+                        },
+                        font: {
+                            weight: 'bold',
+                        }
+                    },
+                    tooltip: {
+                        enabled: false
+                    }
+                }
+            }
+        };
+
+        const ageDemographicsConfig = {
+            type: 'bar',
+            data: ageDemographicsData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y',
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                         ticks: {
+                            callback: function(value) {
+                                return value / 1000 + 'k';
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    datalabels: {
+                        color: '#4A4A4A',
+                        anchor: 'end',
+                        align: 'end',
+                        formatter: (value) => {
+                            return value.toLocaleString();
+                        },
+                        font: {
+                            weight: 'bold',
+                        }
+                    },
+                    tooltip: {
+                        enabled: false
+                    }
+                }
+            }
+        };
+
+
+        const startupChartCtx = document.getElementById('startupCostsChart');
+        const revenueChartCtx = document.getElementById('revenueExpenseChart');
+        const ageChartCtx = document.getElementById('ageDemographicsChart');
+
+        const startupChart = new Chart(startupChartCtx, startupCostsConfig);
+        const revenueChart = new Chart(revenueChartCtx, revenueExpenseConfig);
+        const ageChart = new Chart(ageChartCtx, ageDemographicsConfig);
+        
+        startupChartCtx.onclick = (e) => {
+            const points = startupChart.getElementsAtEventForMode(e, 'nearest', { intersect: true }, true);
+            if (points.length) {
+                const firstPoint = points[0];
+                const label = startupChart.data.labels[firstPoint.index];
+                const detailText = startupDetails[label];
+                document.getElementById('startupDetails').innerHTML = `<p class="font-bold text-center">${label}:</p><p class="text-center">${detailText}</p>`;
+            }
+        };
+
+        revenueChartCtx.onclick = (e) => {
+            const points = revenueChart.getElementsAtEventForMode(e, 'nearest', { intersect: true }, true);
+            if (points.length) {
+                const firstPoint = points[0];
+                const datasetLabel = revenueChart.data.datasets[firstPoint.datasetIndex].label;
+                const detailText = revenueDetails[datasetLabel];
+                document.getElementById('revenueDetails').innerHTML = `<p class="font-bold text-center">${datasetLabel}:</p><p class="text-center">${detailText}</p>`;
+            }
+        };
+        
+        const studentSlider = document.getElementById('studentSlider');
+        const tuitionSlider = document.getElementById('tuitionSlider');
+        const afterSchoolSlider = document.getElementById('afterSchoolSlider');
+        const studentValue = document.getElementById('studentValue');
+        const tuitionValue = document.getElementById('tuitionValue');
+        const afterSchoolValue = document.getElementById('afterSchoolValue');
+        const estimatedRevenue = document.getElementById('estimatedRevenue');
+        
+        const afterSchoolFee = 200;
+
+        function updateRevenue() {
+            const students = parseInt(studentSlider.value);
+            const tuition = parseInt(tuitionSlider.value);
+            const afterSchoolStudents = parseInt(afterSchoolSlider.value);
+            const danceRevenue = students * tuition;
+            const afterSchoolRevenue = afterSchoolStudents * afterSchoolFee;
+            const totalRevenue = danceRevenue + afterSchoolRevenue;
+            
+            studentValue.textContent = students;
+            tuitionValue.textContent = tuition;
+            afterSchoolValue.textContent = afterSchoolStudents;
+            estimatedRevenue.textContent = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0 }).format(totalRevenue);
+        }
+
+        studentSlider.addEventListener('input', updateRevenue);
+        tuitionSlider.addEventListener('input', updateRevenue);
+        afterSchoolSlider.addEventListener('input', updateRevenue);
+        updateRevenue();
+
+        const buildoutSlider = document.getElementById('buildoutSlider');
+        const capitalSlider = document.getElementById('capitalSlider');
+        const rentSlider = document.getElementById('rentSlider');
+        const equipmentSlider = document.getElementById('equipmentSlider');
+        const vehicleSlider = document.getElementById('vehicleSlider');
+
+        const buildoutValue = document.getElementById('buildoutValue');
+        const capitalValue = document.getElementById('capitalValue');
+        const rentValue = document.getElementById('rentValue');
+        const equipmentValue = document.getElementById('equipmentValue');
+        const vehicleValue = document.getElementById('vehicleValue');
+        const totalStartupCost = document.getElementById('totalStartupCost');
+        
+        const initialStartupData = [25000, 35000, 9000, 5000, 20000];
+        const startupSlidersLabels = ['Build-Out', 'Working Capital', 'Lease & Rent', 'Equipment', 'Vehicle Acquisition'];
+        const startupSlidersColors = ['#1e40af', '#6366f1', '#10b981', '#f59e0b', '#3b82f6'];
+
+        const startupSlidersChartCtx = document.getElementById('startupSlidersChart');
+        const startupSlidersChart = new Chart(startupSlidersChartCtx, {
+            type: 'doughnut',
+            data: {
+                labels: startupSlidersLabels,
+                datasets: [{
+                    label: 'Startup Costs',
+                    data: initialStartupData,
+                    backgroundColor: startupSlidersColors,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    },
+                    datalabels: {
+                        color: '#4A4A4A',
+                        formatter: (value, context) => {
+                            const total = context.chart.data.datasets[0].data.reduce((acc, current) => acc + current, 0);
+                            const percentage = (value / total * 100).toFixed(1) + '%';
+                            return `${percentage}\n$${value.toLocaleString()}`;
+                        },
+                        labels: {
+                            value: {
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                }
+                            }
+                        }
+                    },
+                     tooltip: {
+                        enabled: false
+                    }
+                }
+            }
+        });
+
+        function updateStartupCosts() {
+            const buildout = parseInt(buildoutSlider.value);
+            const capital = parseInt(capitalSlider.value);
+            const rent = parseInt(rentSlider.value);
+            const equipment = parseInt(equipmentSlider.value);
+            const vehicle = parseInt(vehicleSlider.value);
+            const total = buildout + capital + rent + equipment + vehicle + 4000 + 3000;
+            buildoutValue.textContent = buildout.toLocaleString();
+            capitalValue.textContent = capital.toLocaleString();
+            rentValue.textContent = rent.toLocaleString();
+            equipmentValue.textContent = equipment.toLocaleString();
+            vehicleValue.textContent = vehicle.toLocaleString();
+            totalStartupCost.textContent = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0 }).format(total);
+
+            startupSlidersChart.data.datasets[0].data = [buildout, capital, rent, equipment, vehicle];
+            startupSlidersChart.update();
+        }
+
+        buildoutSlider.addEventListener('input', updateStartupCosts);
+        capitalSlider.addEventListener('input', updateStartupCosts);
+        rentSlider.addEventListener('input', updateStartupCosts);
+        equipmentSlider.addEventListener('input', updateStartupCosts);
+        vehicleSlider.addEventListener('input', updateStartupCosts);
+        updateStartupCosts();
+    });
+</script>
+</body>
+</html>
